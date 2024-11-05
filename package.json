@@ -7,8 +7,28 @@
   "scripts": {
     "dev": "nodemon --exec ts-node src/main.ts",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/main.js"
+    "start": "node dist/main.js",
+    "pm2:start": "pm2 start dist/main.js --name cow --time",
+    "pm2:stop": "pm2 stop cow",
+    "pm2:restart": "pm2 restart cow",
+    "pm2:delete": "pm2 delete cow"
   },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "扣子",
+    "Coze",
+    "Wechat",
+    "微信",
+    "微信机器人",
+    "微信助手",
+    "智能机器人",
+    "对话机器人",
+    "wechaty",
+    "node",
+    "js"
+  ],
   "dependencies": {
     "axios": "^1.7.7",
     "dotenv": "^16.0.3",
@@ -20,6 +40,7 @@
   "devDependencies": {
     "@types/qrcode": "^1.5.0",
     "nodemon": "^2.0.20",
+    "pm2": "^5.4.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.6.3"
   },
