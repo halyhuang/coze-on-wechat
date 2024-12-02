@@ -133,7 +133,7 @@ export default class CozeBot {
       const startsWithMention = text.startsWith(textMention);
       const textWithoutMention = text.slice(textMention.length + 1);
       const followByTriggerKeyword = textWithoutMention.startsWith(this.cozeTriggerKeyword);
-      triggered = startsWithMention && followByTriggerKeyword;
+      triggered = startsWithMention && !!textWithoutMention && followByTriggerKeyword;
     }
     if (triggered) {
       console.log(`🎯 Coze triggered: ${text}`);
@@ -146,7 +146,8 @@ export default class CozeBot {
     return (
       (this.disableSelfChat && talker.self()) ||
       ![MessageType.Text, MessageType.Url].includes(messageType) ||
-      talker.name() === '微信团队' ||
+      // 虽然可能误伤，但是更全面地过滤
+      talker.name().includes('微信') ||
       // video or voice reminder
       text.includes('收到一条视频/语音聊天消息，请在手机上查看') ||
       // red pocket reminder
