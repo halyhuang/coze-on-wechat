@@ -21,12 +21,10 @@ if (fs.existsSync('./config.yaml')) {
   };
 }
 
-if (!configFile.accessToken) {
-  console.error('⚠️ No ACCESS_TOKEN found in env, please export to env or configure in .env or config.yaml');
-}
-
-if (!configFile.botId) {
-  console.error('⚠️ No BOT_ID found in env, please export to env or configure in .env or config.yaml');
+if (!configFile.accessToken && !configFile.botId) {
+  throw new Error(
+    '⚠️ No ACCESS_TOKEN or BOT_ID found in env, please export to env or configure in .env or config.yaml'
+  );
 }
 
 export const Config: IConfig = {
