@@ -222,6 +222,11 @@ export default class CozeBot {
     await this.reply(room, wholeReplyMessage);
   }
 
+  // Check if the talker is in the blacklist
+  private isBlacklisted(talkerName: string): boolean {
+    return !!Config.blacklist && Config.blacklist.includes(talkerName);
+  }
+
   // receive a message (main entry)
   async onMessage(message: Message) {
     const talker = message.talker();
@@ -229,10 +234,10 @@ export default class CozeBot {
     const room = message.room();
     const messageType = message.type();
     const isPrivateChat = !room;
-    // do nothing if the message:
-    //    1. is irrelevant (e.g. voice, video, location...), or
-    //    2. doesn't trigger bot (e.g. wrong trigger-word)
-    if (this.isNonsense(talker, messageType, rawText) || !this.triggerCozeMessage(rawText, isPrivateChat)) {
+
+    // Check if the talker is in the blacklist or the message is irrelevant
+    if (this.isBlacklisted(talker.name()) || this.isNonsense(talker, messageType, rawText) || !this.triggerCozeMessage(rawText, isPrivateChat)) {
+      console.log(`⚠️ Message from blacklisted or irrelevant account: ${talker.name()}`);
       return;
     }
 

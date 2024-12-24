@@ -24,15 +24,9 @@
     npm install
     ```
 
-4. 复制 `.env.example` 文件并重命名为 `.env`：
+4. 创建 `config.yaml` 文件，并填写必要的配置项 `accessToken` 和 `botId`，具体参考：[Coze 开发指南](https://www.coze.cn/docs/developer_guides/authentication)
 
-    ```sh
-    cp .env.example .env
-    ```
-
-5. 编辑 `.env` 文件，填写必要的配置项 `ACCESS_TOKEN` 和 `BOT_ID`，具体参考：[Coze 开发指南](https://www.coze.cn/docs/developer_guides/authentication)
-
-6. 启动项目：
+5. 启动项目：
 
     ```sh
     npm run dev
