@@ -16,7 +16,7 @@ const instanceV1 = axios.create({
   baseURL: API_VERSIONS.v1,
   timeout: 10000,
   headers: {
-    Authorization: `Bearer ${Config.accessToken}`,
+    Authorization: `Bearer ${Config.apiKey}`,
     'Content-Type': 'application/json',
   },
 });
@@ -25,7 +25,7 @@ const instanceV3 = axios.create({
   baseURL: API_VERSIONS.v3,
   timeout: 100000,
   headers: {
-    Authorization: `Bearer ${Config.accessToken}`,
+    Authorization: `Bearer ${Config.apiKey}`,
     'Content-Type': 'application/json',
   },
 });
@@ -58,7 +58,7 @@ async function sendChatRequest(messages: IMessage[], name: string) {
   return instanceV3.post(
     '/chat',
     {
-      bot_id: Config.botId,
+      bot_id: Config.model,
       user_id: name,
       stream: true,
       additional_messages: messages,

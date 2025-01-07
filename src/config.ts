@@ -11,17 +11,19 @@ if (fs.existsSync('./config.yaml')) {
   configFile = parse(file);
 }
 
-if (!configFile.accessToken && !configFile.botId) {
+if (!configFile.modelConfig.apiKey && !configFile.modelConfig.model) {
   throw new Error(
-    '⚠️ No ACCESS_TOKEN or BOT_ID found in env, please export to env or configure in config.yaml'
+    '⚠️ No API_KEY or MODEL found in env, please export to env or configure in config.yaml'
   );
 }
 
 console.log('🚀 Configurations:', configFile);
 
 export const Config: IConfig = {
-  accessToken: configFile.accessToken,
-  botId: configFile.botId,
-  cozeTriggerKeyword: configFile.cozeTriggerKeyword || '',
-  blacklist: configFile.blacklist || [],
+  apiKey: configFile.modelConfig.apiKey,
+  model: configFile.modelConfig.model,
+  cozeTriggerKeyword: configFile.botConfig.cozeTriggerKeyword || '',
+  blacklist: configFile.botConfig.blacklist || [],
+  modelConfig: configFile.modelConfig,
+  fallbackModel: configFile.fallbackModel
 };

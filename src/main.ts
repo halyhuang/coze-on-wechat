@@ -26,15 +26,14 @@ async function main() {
     // message handler
     .on('message', async (message: any) => {
       try {
-        // prevent accidentally respond to history chat on restart
-        // only respond to message later than chatbot start time
+        // 防止重启时响应历史消息
         const msgDate = message.date();
         if (msgDate.getTime() <= cozeBot.startTime.getTime()) {
           return;
         }
 
         console.log(`📨 ${message}`);
-        // handle message for chatGPT bot
+        // 处理消息
         await cozeBot.onMessage(message);
       } catch (e) {
         console.error(`❌ ${e}`);

@@ -1,6 +1,0 @@
-accessToken: "pat_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-botId: "7************"
-cozeTriggerKeyword: "coze"
-blacklist:
-  - "公众号名称"
-  - "微信名称"

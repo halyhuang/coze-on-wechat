@@ -1,6 +1,7 @@
 import { Message } from "wechaty";
 import { ContactInterface, RoomInterface } from "wechaty/impls";
-import CozeApi, { IMessage } from './api';
+import { ModelFactory } from './services/modelFactory';
+import { IModelService, IMessage } from './interfaces/model';
 import { Config } from "./config";
 
 enum MessageType {
@@ -44,6 +45,13 @@ export default class CozeBot {
 
   // message size for a single reply by the bot
   SINGLE_MESSAGE_MAX_SIZE: number = 800;
+
+  private modelService: IModelService;
+  
+  constructor() {
+    this.modelService = ModelFactory.createModel(Config.modelConfig);
+    this.startTime = new Date();
+  }
 
   // set bot name during login stage
   setBotName(botName: string) {
@@ -172,14 +180,25 @@ export default class CozeBot {
 
   // send question to Coze with OpenAI API and get answer
   async onChat(text: string, name: string): Promise<string> {
+    // 创建消息格式
     const inputMessages = this.createMessages(text);
     try {
-      // config OpenAI API request body
-      const chatgptReplyMessage = await CozeApi.chat(inputMessages, name);
-      console.log(`🤖️ Coze says: ${chatgptReplyMessage}`);
-      return chatgptReplyMessage || this.cozeErrorMessage;
-    } catch (e: any) {
+      // 调用主模型服务
+      const response = await this.modelService.chat(inputMessages, name);
+      console.log(`🤖️ AI says: ${response.message}`);
+      return response.message || this.cozeErrorMessage;
+    } catch (e) {
       console.error(`❌ ${e}`);
+      // 如果主模型失败且配置了备用模型，尝试使用备用模型
+      if (Config.fallbackModel) {
+        try {
+          const fallbackService = ModelFactory.createModel(Config.fallbackModel);
+          const response = await fallbackService.chat(inputMessages, name);
+          return response.message || this.cozeErrorMessage;
+        } catch (fallbackError) {
+          console.error('Fallback model failed:', fallbackError);
+        }
+      }
       return this.cozeErrorMessage;
     }
   }
@@ -235,19 +254,19 @@ export default class CozeBot {
     const messageType = message.type();
     const isPrivateChat = !room;
 
-    // Check if the talker is in the blacklist or the message is irrelevant
-    if (this.isBlacklisted(talker.name()) || this.isNonsense(talker, messageType, rawText) || !this.triggerCozeMessage(rawText, isPrivateChat)) {
-      console.log(`⚠️ Message from blacklisted or irrelevant account: ${talker.name()}`);
+    // 检查黑名单和消息有效性
+    if (this.isBlacklisted(talker.name()) || 
+        this.isNonsense(talker, messageType, rawText) || 
+        !this.triggerCozeMessage(rawText, isPrivateChat)) {
       return;
     }
 
-    // massage sender's name
+    // 获取发送者名称
     const name = talker.name();
-    // clean the message for Coze input
+    // 清理消息内容
     const text = await this.cleanMessage({ message, messageType, rawText, isPrivateChat });
-    console.log('最终 name,text:', name, text);
 
-    // reply to private or group chat
+    // 根据是私聊还是群聊分别处理
     if (isPrivateChat) {
       return await this.onPrivateMessage(talker, text, name);
     } else {
